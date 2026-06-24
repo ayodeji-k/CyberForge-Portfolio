@@ -32,4 +32,11 @@ export const authService = {
   },
 };
 
+export const billingService = {
+  createCheckoutSession: async () => {
+    const response = await api.post('/create-checkout-session');
+    return response.data;
+  },
+};
+
 export default api;

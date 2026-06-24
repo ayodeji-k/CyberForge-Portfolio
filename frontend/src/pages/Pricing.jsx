@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Check, 
   X, 
@@ -11,8 +11,37 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { billingService } from '../services/api';
 
 const Pricing = () => {
+  const navigate = useNavigate();
+
+  const handleUpgrade = async (plan) => {
+    if (plan.price === '$0') return;
+    
+    // For the Premium Explorer plan, we use the backend to create a checkout session
+    if (plan.name === 'Premium Explorer') {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        const { url } = await billingService.createCheckoutSession();
+        window.location.href = url;
+      } catch (error) {
+        console.error('Failed to create checkout session:', error);
+        alert('Checkout failed. Please try again or contact support.');
+      }
+      return;
+    }
+
+    // For other plans (like Pro), we might use the static link
+    if (plan.link) {
+      window.open(plan.link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const plans = [
     {
       name: 'Freemium Core',
@@ -137,10 +166,8 @@ const Pricing = () => {
                 </div>
 
                 <div className="pt-8 mt-auto">
-                  <a 
-                    href={plan.link || '#'}
-                    target={plan.link ? '_blank' : '_self'}
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={() => handleUpgrade(plan)}
                     className={`block w-full text-center py-2.5 ${
                       plan.popular 
                         ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)]' 
@@ -148,7 +175,7 @@ const Pricing = () => {
                     } text-xs font-semibold rounded transition`}
                   >
                     {plan.cta}
-                  </a>
+                  </button>
                 </div>
               </div>
             ))}

@@ -4,11 +4,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from typing import List
 
-from . import auth, schemas, database, projects
+from . import auth, schemas, database, projects, billing
 
 app = FastAPI(title="CyberForge Portfolio API")
 
 app.include_router(projects.router)
+app.include_router(billing.router)
 
 app.add_middleware(
     CORSMiddleware,
