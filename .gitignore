@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Frontend build
+dist/
+
+# OS
+.DS_Store
+
+# Temporary files and logs
+/tmp/
+*.log
+
+# Editor settings
+.vscode/
+.idea/

@@ -1,0 +1,34 @@
+#root {
+  width: 100%;
+}
+
+.prose pre {
+  @apply bg-slate-900 border border-slate-800 p-4 rounded-lg;
+}
+
+.prose code {
+  @apply font-mono text-cyan-400;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  @apply text-slate-100;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
