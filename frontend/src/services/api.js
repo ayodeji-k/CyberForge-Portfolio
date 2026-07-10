@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api'; // We'll proxy /api in vite.config.js
+const API_URL = 'https://cyberforge-portfolio.onrender.com';
 
 const api = axios.create({
   baseURL: API_URL,

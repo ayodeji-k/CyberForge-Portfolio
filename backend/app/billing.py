@@ -22,8 +22,8 @@ async def create_checkout_session(current_user: dict = Depends(auth.get_current_
                 },
             ],
             mode="subscription",
-            success_url="http://localhost:3000/dashboard",
-            cancel_url="http://localhost:3000/pricing",
+            success_url="https://cyber-forge-portfolio.vercel.app/dashboard",
+            cancel_url="https://cyber-forge-portfolio.vercel.app/pricing",
             customer_email=current_user["email"],
             metadata={
                 "user_id": current_user["id"]
