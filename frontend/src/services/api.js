@@ -39,4 +39,11 @@ export const billingService = {
   },
 };
 
+export const resumeService = {
+  analyze: async (text, domain) => {
+    const response = await api.post('/resume/analyze', { text, domain });
+    return response.data;
+  },
+};
+
 export default api;

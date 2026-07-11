@@ -1,22 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Sparkles, 
-  Download, 
-  Save, 
-  Gauge, 
-  AlertTriangle, 
-  Check, 
-  CheckCircle2, 
-  Zap 
+import { resumeService } from '../services/api';
+import {
+  ArrowLeft,
+  Sparkles,
+  Download,
+  Save,
+  Gauge,
+  AlertTriangle,
+  Check,
+  CheckCircle2,
+  Zap
 } from 'lucide-react';
 
 const ResumeBuilder = () => {
-  const [score, setScore] = useState(82);
+  const [score, setScore] = useState(0);
+  const [suggestions, setSuggestions] = useState([]);
   const [pastedResume, setPastedResume] = useState('');
   const [summary, setSummary] = useState('Aspiring Cybersecurity Analyst with strong foundational competence across vulnerability management, compliance audits, and dual DMZ networking. Proficient in executing active scans and implementing mitigation roadmaps matching NIST frameworks.');
   const [skills, setSkills] = useState('Nmap, Wireshark, PfSense, SOC 2 Readiness, ISO 27001, Python, Bash, Windows Server Active Directory');
+
+  useEffect(() => {
+    const analyze = async () => {
+      const fullText = summary + ' ' + skills + ' ' + pastedResume;
+      try {
+        const result = await resumeService.analyze(fullText, 'vulnerability-assessment');
+        setScore(result.score);
+        setSuggestions(result.suggestions);
+      } catch (err) {
+        console.error('Failed to analyze resume', err);
+      }
+    };
+
+    const timer = setTimeout(analyze, 1000);
+    return () => clearTimeout(timer);
+  }, [summary, skills, pastedResume]);
   
   const [embeddedProjects, setEmbeddedProjects] = useState({
     va: true,
@@ -217,28 +235,30 @@ const ResumeBuilder = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {[
-                    { id: 'nessus', title: 'Missing Tool: "Nessus"', points: 5, desc: 'Heavily requested in SOC roles. Since you completed the VA lab, we can inject this block.' },
-                    { id: 'cvss', title: 'Missing Match: "CVSS v3.1"', points: 4, desc: 'Recruiters look specifically for CVSS scoring competence when vetting assessments.' },
-                    { id: 'mitigation', title: 'Missing Concept: "Risk Mitigation"', points: 4, desc: 'Adding "mitigation roadmaps" matches compliance guidelines. Available in GRC lab.' },
-                  ].map((sug) => (
-                    <div key={sug.id} className="bg-slate-950/80 rounded border border-slate-850 p-4 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-200">{sug.title}</span>
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-mono ${sug.points > 4 ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'} border`}>
-                          +{sug.points} Points
-                        </span>
+                  {suggestions.length > 0 ? (
+                    suggestions.map((sug) => (
+                      <div key={sug.id} className="bg-slate-950/80 rounded border border-slate-850 p-4 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-200">{sug.title}</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-mono ${sug.points > 4 ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'} border`}>
+                            +{sug.points} Points
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-xs leading-relaxed">{sug.desc}</p>
+                        <button
+                          onClick={() => handleInject(sug.points)}
+                          className="px-3 py-1.5 bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-cyan-500/20 hover:border-cyan-400 rounded text-[11px] font-bold transition flex items-center space-x-1"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Inject Experience (+{sug.points} Pts)</span>
+                        </button>
                       </div>
-                      <p className="text-slate-400 text-xs leading-relaxed">{sug.desc}</p>
-                      <button 
-                        onClick={() => handleInject(sug.points)}
-                        className="px-3 py-1.5 bg-slate-900 hover:bg-slate-850 text-cyan-400 border border-cyan-500/20 hover:border-cyan-400 rounded text-[11px] font-bold transition flex items-center space-x-1"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Inject Experience (+{sug.points} Pts)</span>
-                      </button>
+                    ))
+                  ) : (
+                    <div className="text-slate-500 text-xs text-center py-8">
+                      No suggestions available. Try adding more content to your resume.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

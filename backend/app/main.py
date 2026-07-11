@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from typing import List
-
-from . import auth, schemas, database, projects, billing
+from . import auth, schemas, database, projects, billing, resume
 
 app = FastAPI(title="CyberForge Portfolio API")
 
 app.include_router(projects.router)
 app.include_router(billing.router)
+app.include_router(resume.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -54,7 +54,6 @@ async def create_user(user: schemas.UserCreate):
     existing = database.run_query(f"SELECT * FROM app_users WHERE email = '{user.email}'")
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
     hashed_password = auth.get_password_hash(user.password)
     database.run_query(
         f"INSERT INTO app_users (email, hashed_password) VALUES ('{user.email}', '{hashed_password}')"
