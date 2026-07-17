@@ -1,9 +1,6 @@
-#!/bin/bash
-# CyberForge Portfolio - Render build script
+#!/usr/bin/env bash
 set -e
-
-# Navigate to backend directory and install dependencies
-cd backend
-pip install -r requirements.txt
-
-echo "Build completed successfully"
+echo "Installing Python dependencies..."
+pip install --upgrade pip setuptools wheel
+pip install -r backend/requirements.txt
+echo "Build completed successfully!"
